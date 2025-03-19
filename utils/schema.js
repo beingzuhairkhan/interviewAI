@@ -22,3 +22,15 @@ export const UserAnswer = pgTable("userAnswer", {
   userEmail: varchar("userEmail"),
   createdAt: varchar("createdAt"),
 });
+
+export const AlumniPost = pgTable("alumni_post", {
+  id: serial("id").primaryKey(),                  
+  title: text("title").notNull(),                  // Post title (e.g., "Hiring Software Engineers")
+  content: text("content").notNull(),              // Detailed job post or career advice
+  company: varchar("company"),                     // Company name (if applicable)
+  location: varchar("location"),                   // Job location (optional)
+  jobLink: varchar("jobLink"),                     // Application link (if job-related)
+  alumniName: varchar("alumniName").notNull(),     // Alumni name
+  alumniEmail: varchar("alumniEmail").notNull(),   // Alumni email
+  createdAt: varchar("createdAt"),
+});

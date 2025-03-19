@@ -13,6 +13,8 @@ const links = [
   { link: "/dashboard", title: "Dashboard" },
   { link: "/dashboard/interview", title: "Interviews" },
   { link: "/contact", title: "Contact" },
+  { link: "/jobs", title: "create-Jobs" },
+  { link: "/getalljobs", title: "jobs" },
 ];
 
 const Navbar = () => {

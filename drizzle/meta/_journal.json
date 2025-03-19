@@ -8,6 +8,20 @@
       "when": 1742301267807,
       "tag": "0000_regular_maverick",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1742340359890,
+      "tag": "0001_cool_nico_minoru",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1742342360644,
+      "tag": "0002_wet_brother_voodoo",
+      "breakpoints": true
     }
   ]
 }
