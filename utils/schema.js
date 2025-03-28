@@ -1,12 +1,21 @@
 import { pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
 
+export const Users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  clerkUserId: varchar("clerkUserId").notNull().unique(),
+  name: varchar("name").notNull(),
+  email: varchar("email").notNull().unique(),
+  role: varchar("role").notNull(),
+  createdAt: varchar("createdAt"),
+});
+
 export const Interview = pgTable("interview", {
   id: serial("id").primaryKey(),
   jsonMockResponse: text("jsonMockResponse").notNull(),
   jobPosition: varchar("jobPosition").notNull(),
   jobDescription: varchar("jobDescription").notNull(),
   jobExp: varchar("jobExp").notNull(),
-  createdBy: varchar("createdBy").notNull(),
+  createdBy: varchar("createdBy").notNull(), 
   createdAt: varchar("createdAt"),
   mockId: varchar("mockId").notNull(),
 });
@@ -19,18 +28,22 @@ export const UserAnswer = pgTable("userAnswer", {
   userAns: text("userAns"),
   feedback: text("feedback"),
   rating: varchar("rating"),
-  userEmail: varchar("userEmail"),
+  userEmail: varchar("userEmail").notNull(),
+  userName: varchar("userName").notNull(),
+  userId: varchar("userId").notNull(), 
   createdAt: varchar("createdAt"),
 });
 
 export const AlumniPost = pgTable("alumni_post", {
-  id: serial("id").primaryKey(),                  
-  title: text("title").notNull(),                  // Post title (e.g., "Hiring Software Engineers")
-  content: text("content").notNull(),              // Detailed job post or career advice
-  company: varchar("company"),                     // Company name (if applicable)
-  location: varchar("location"),                   // Job location (optional)
-  jobLink: varchar("jobLink"),                     // Application link (if job-related)
-  alumniName: varchar("alumniName").notNull(),     // Alumni name
-  alumniEmail: varchar("alumniEmail").notNull(),   // Alumni email
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  company: varchar("company"),
+  location: varchar("location"),
+  jobLink: varchar("jobLink"),
+  alumniName: varchar("alumniName").notNull(),
+  alumniEmail: varchar("alumniEmail").notNull(),
+  alumniId: varchar("alumniId").notNull(), 
+  role: varchar("role").notNull(),
   createdAt: varchar("createdAt"),
 });

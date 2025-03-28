@@ -1,96 +1,101 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import Navbar from '../dashboard/_components/navbar'
-export default function AlumniPage() {
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Navbar from "../dashboard/_components/navbar";
+import { toast } from "sonner";
+
+export default function JobForm() {
   const { user } = useUser();
   const router = useRouter();
-  const [posts, setPosts] = useState([]); // Alumni Job Posts
-  const [externalJobs, setExternalJobs] = useState([]); // External API Jobs
-  const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    company: "",
-    location: "",
-    jobLink: "",
-  });
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Fetch all job posts (Alumni + External)
-  useEffect(() => {
-    const fetchAllJobs = async () => {
-      try {
-        // Fetch alumni job posts
-        const alumniRes = await fetch("/api/alumni");
-        const alumniData = await alumniRes.json();
-        setPosts(alumniData);
-
-        // Fetch external job posts (Example: Replace with actual API)
-        const externalRes = await fetch("/api/external-jobs");
-        const externalData = await externalRes.json();
-        setExternalJobs(externalData);
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
-      }
-    };
-
-    fetchAllJobs();
-  }, []);
-
-  // 🔹 Handle input changes
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // 🔹 Handle post submission
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      alert("Please log in to post.");
+      toast.error("Please log in to post.");
       return router.push("/sign-in");
     }
 
     setLoading(true);
-    const res = await fetch("/api/alumni", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    const formData = new FormData(e.target);
+    const jobData = Object.fromEntries(formData.entries());
 
-    if (res.ok) {
-      alert("Post Created!");
-      router.refresh(); // Refresh page to show new posts
-    } else {
-      alert("Failed to create post.");
+    try {
+      const res = await fetch("/api/alumni", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(jobData),
+      });
+
+      if (res.ok) {
+        toast.success("Job Posted Successfully!");
+        router.replace(router.asPath); // ✅ Refresh page correctly in App Router
+      } else {
+        toast.error(" Failed to create post.");
+      }
+    } catch (error) {
+      toast.error(` Error posting job: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <div>
-       <Navbar/>
-    <div className="max-w-2xl mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4 text-center">🎓 Job Board</h1>
+    <>
+      <Navbar />
+      <div className=" flex justify-center items-center p-6">
+        <div className="max-w-3xl w-full">
+          <Card className="shadow-lg border border-gray-200">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-center text-gray-800">
+                🚀 Post a Job
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Job Title</Label>
+                  <Input name="title" id="title" placeholder="Enter job title" required />
+                </div>
 
-      {/* 🔹 Post Creation Form (Visible only to logged-in users) */}
-      {user && (
-        <form onSubmit={handleSubmit} className="bg-gray-100 p-4 rounded-lg shadow-md mb-6">
-          <h2 className="text-xl font-semibold mb-2">Create a Job Post</h2>
-          <input name="title" placeholder="Job Title" onChange={handleChange} required className="w-full p-2 mb-2 border" />
-          <textarea name="content" placeholder="Job Description" onChange={handleChange} required className="w-full p-2 mb-2 border" />
-          <input name="company" placeholder="Company (optional)" onChange={handleChange} className="w-full p-2 mb-2 border" />
-          <input name="location" placeholder="Location (optional)" onChange={handleChange} className="w-full p-2 mb-2 border" />
-          <input name="jobLink" placeholder="Job Link (optional)" onChange={handleChange} className="w-full p-2 mb-2 border" />
-          <button type="submit" disabled={loading} className="bg-blue-500 text-white px-4 py-2 mt-2">
-            {loading ? "Posting..." : "Post Job"}
-          </button>
-        </form>
-      )}
+                <div className="space-y-2">
+                  <Label htmlFor="content">Job Description</Label>
+                  <Textarea name="content" id="content" placeholder="Enter job description" required />
+                </div>
 
-     
-    </div>
-    </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="company">Company *</Label>
+                    <Input name="company" id="company" placeholder="Enter company name" required />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location *</Label>
+                    <Input name="location" id="location" placeholder="Enter job location" required />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="jobLink">Job Link *</Label>
+                  <Input name="jobLink" id="jobLink" placeholder="Enter job URL" required />
+                </div>
+
+                <Button type="submit" className="w-full bg-black text-white font-semibold py-2 rounded-md hover:bg-gray-900 transition" disabled={loading}>
+                  {loading ? "Posting..." : "Post Job"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </>
   );
 }

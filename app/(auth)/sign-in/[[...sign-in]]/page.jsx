@@ -1,10 +1,14 @@
-import { SignIn } from "@clerk/nextjs";
-import React from "react";
+"use client";
+import { SignIn, useAuth, useUser } from "@clerk/nextjs";
+
 
 const SigninPage = () => {
+  
+
   return (
-    <div>
-      <SignIn />
+    <div className="flex justify-center items-center min-h-screen">
+      <SignIn  
+      />
     </div>
   );
 };
