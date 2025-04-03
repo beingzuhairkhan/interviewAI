@@ -8,11 +8,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import DropDown from "./DropDown";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu"
 
 const links = [
   { link: "/dashboard", title: "Dashboard" },
   { link: "/dashboard/interview", title: "Interviews" },
   { link: "/resume", title: "Resume" },
+  { link: "/test", title: "Mock Test" },
   { link: "/getalljobs", title: "Jobs" },
   { link: "/chat", title: "Chat" },
 ];

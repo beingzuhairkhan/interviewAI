@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "../dashboard/_components/navbar";
 
-const socket = io("http://localhost:3001", { transports: ["websocket"] });
+const socket = io("https://interviewbackend-1w14.onrender.com", { transports: ["websocket"] });
 
 export default function Chat() {
   const { user, isLoaded } = useUser();
@@ -94,7 +94,7 @@ export default function Chat() {
     <>
       <Navbar />
       <div className="flex h-[calc(100vh-64px)]">
-        {/* Left Sidebar - Active Users */}
+       
         <div className="w-1/4 p-4 bg-gray-900 rounded-lg mt-6 ml-2 text-white flex flex-col">
           <h2 className="font-bold text-lg mb-4">Active Users</h2>
           <div className="h-full overflow-y-auto">
@@ -140,7 +140,7 @@ export default function Chat() {
             </div>
           </Card>
 
-          {/* Message Input Fixed at Bottom */}
+      
           <div className="flex bg-white p-4 border-t fixed bottom-0 w-3/4">
             <Input
               type="text"

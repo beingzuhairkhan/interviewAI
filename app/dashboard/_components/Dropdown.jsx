@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
-import { LogOut, PlusCircle } from "lucide-react";
+import { LogOut, PlusCircle , Award ,ChartColumn  } from "lucide-react";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -14,7 +14,7 @@ const UserDropdown = ({ setOpen, handleProfile }) => {
   const router = useRouter();
   const { user } = useUser();
   const searchParams = useSearchParams();
-  console.log("User" , user?.imageUrl)
+  
 
   // ✅ Initialize role from localStorage or default
   const [role, setRole] = useState(() => {
@@ -44,7 +44,7 @@ const UserDropdown = ({ setOpen, handleProfile }) => {
   };
 
   return (
-    <Dropdown className="bg-white p-4 rounded-2xl text-xl">
+    <Dropdown className="bg-white  p-4 rounded-2xl text-xl">
       <DropdownTrigger>
         <Avatar
           src={user?.imageUrl } // ✅ Fallback image
@@ -66,15 +66,32 @@ const UserDropdown = ({ setOpen, handleProfile }) => {
           </div>
         </DropdownItem>
 
-        {/* Create Jobs (Only for Students) */}
+       
         {role === "student" && (
           <DropdownItem>
             <Link href="/jobs" className="flex w-full mt-2 p-2 rounded-lg items-center hover:bg-gray-200">
-              <PlusCircle className="text-xl ml-1 text-black" />
+              <PlusCircle className="text-xl mr-2 text-black" />
               <span className={`${styles.label} text-black text-[16px] pl-2`}>Create Jobs</span>
             </Link>
           </DropdownItem>
         )}
+        {/* Rank */}
+        <DropdownItem>
+      <Link href="/testRank" passHref>
+        <div className="flex items-center  mt-2 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
+          <Award   className="text-xl mr-2 text-black" />
+          <span className={`${styles.label} text-black text-[16px]`}>Test Rank</span>
+        </div>
+      </Link>
+    </DropdownItem>
+    <DropdownItem>
+      <Link href="/graph" passHref>
+        <div className="flex items-center  mt-2 p-2 rounded-lg hover:bg-gray-200 cursor-pointer">
+          <ChartColumn   className="text-xl mr-2 text-black" />
+          <span className={`${styles.label} text-black text-[16px]`}>Test Graph</span>
+        </div>
+      </Link>
+    </DropdownItem>
 
         {/* Logout */}
         <DropdownItem onClick={handleLogout}>

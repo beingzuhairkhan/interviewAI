@@ -1,70 +1,87 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 import pdfParse from "pdf-parse";
-import * as fs from 'fs';
 
-// ✅ Initialize Google Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(request) {
   try {
-    // ✅ Get form data
+    //console.log(" Request received at /api/resumeats");
 
-    const pdfFile = fs.readFileSync('../../../public/zuhair_.pdf')
-    let resumeText = "";
-    console.log(resumeText)
-    try {
-      const parsedData = await pdfParse(pdfFile);
-      resumeText = parsedData.text;
-    } catch (error) {
-      console.error(" PDF Parsing Error:", error.message);
-      return NextResponse.json(
-        { error: "Failed to parse PDF file." },
-        { status: 500 }
-      );
-    }
+    //  Get form data
+    // const formData = await request.formData();
+    // const resumeFile = formData.get("resume");
+    // const jobDescription = formData.get("jobDescription");
 
- 
-    const prompt = `Analyze the following resume and compare it with the given job description. Assign an ATS score (0-100) based on keyword relevance, formatting, readability, and completeness. Also, provide missing skills and improvement suggestions.
+    // console.log(" Received form data:", { resumeFile, jobDescription });
 
-    Job Description:
-    MERN stack
+    // //  Validate input
+    // if (!resumeFile || !jobDescription) {
+    //   return NextResponse.json(
+    //     { error: "Resume and Job Description are required" },
+    //     { status: 400 }
+    //   );
+    // }
 
-    Resume:
-    ${resumeText}
+    // //  Convert file to buffer
+    // const buffer = Buffer.from(await resumeFile.arrayBuffer());
 
-    Return the response in **valid JSON format** like this:
-    {
-      "atsScore": 85,
-      "missingSkills": ["React.js", "GraphQL"],
-      "formattingSuggestions": ["Use bullet points for clarity"],
-      "readabilityImprovements": ["Reduce long paragraphs"]
-    }`;
+    // //  Parse PDF text
+    // let resumeText = "";
+    // try {
+    //   const parsedData = await pdfParse(buffer);
+    //   resumeText = parsedData.text;
+    //   console.log(" Extracted Resume Text:", resumeText.substring(0, 500)); // Print first 500 chars
+    // } catch (error) {
+    //   console.error("PDF Parsing Error:", error.message);
+    //   return NextResponse.json({ error: "Failed to parse PDF file." }, { status: 500 });
+    // }
 
-    // ✅ Generate content using Gemini AI
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-    });
+    // //  AI Prompt for Resume Scoring
+    // const prompt = `
+    // Analyze the following resume and compare it with the given job description. Assign an ATS score (0-100) based on keyword relevance, formatting, readability, and completeness. Also, provide missing skills and improvement suggestions.
 
-    // ✅ Extract JSON response
-    const responseText = await result.response.text();
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    // Job Description:
+    // ${jobDescription}
 
-    if (!jsonMatch) {
-      throw new Error("Gemini API did not return valid JSON.");
-    }
+    // Resume:
+    // ${resumeText}
 
-    const parsedResponse = JSON.parse(jsonMatch[0]);
+    // Return the response in **valid JSON format** like this:
+    // {
+    //   "atsScore": 85,
+    //   "missingSkills": ["React.js", "GraphQL"],
+    //   "formattingSuggestions": ["Use bullet points for clarity"],
+    //   "readabilityImprovements": ["Reduce long paragraphs"]
+    // }`;
 
-  
-    return NextResponse.json(parsedResponse, { status: 200 });
+    // console.log(" Sending Prompt to Groq API:", prompt);
+
+    // //  Call Groq AI API
+    // const aiResponse = await groq.chat.completions.create({
+    //   messages: [{ role: "user", content: prompt }],
+    //   model: "llama-3.3-70b-versatile",
+    // });
+
+    // console.log("🔹 Raw Groq API Response:", aiResponse);
+
+    // //  Extract AI Response
+    // let responseText = aiResponse.choices?.[0]?.message?.content?.trim();
+    // if (!responseText) {
+    //   throw new Error("Groq AI did not return valid JSON.");
+    // }
+
+    // //  Remove unnecessary characters (```json) if present
+    // responseText = responseText.replace(/```json|```/g, "").trim();
+
+    // console.log(" Processed AI Response:", responseText);
+
+    // //  Parse JSON response
+    // const parsedResponse = JSON.parse(responseText);
+
+    return NextResponse.json("API IS WORKING", { status: 200 });
   } catch (error) {
-    // ✅ Handle errors
     console.error("❌ ATS API Error:", error.message || error);
-    return NextResponse.json(
-      { error: "Failed to analyze resume" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to analyze resume" }, { status: 500 });
   }
 }

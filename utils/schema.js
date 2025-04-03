@@ -1,4 +1,4 @@
-import { pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, varchar , integer } from "drizzle-orm/pg-core";
 
 export const Users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -38,6 +38,7 @@ export const AlumniPost = pgTable("alumni_post", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   content: text("content").notNull(),
+  imageURL:text("imageURL").notNull(),
   company: varchar("company"),
   location: varchar("location"),
   jobLink: varchar("jobLink"),
@@ -47,3 +48,32 @@ export const AlumniPost = pgTable("alumni_post", {
   role: varchar("role").notNull(),
   createdAt: varchar("createdAt"),
 });
+
+export const test = pgTable("tests" , {
+  id: serial("id").primaryKey(),
+  weekNumber: integer("week_number").unique().notNull(),
+  topic:text("topic").notNull(),
+  questions: text("questions").notNull(),
+  createdAt: varchar("createdAt"),
+
+})
+
+export const submission = pgTable("Submissions" , {
+  id:serial("id").primaryKey(),
+  clerkUserId: varchar("clerkUserId").notNull(),
+  userName:text("userName").notNull(),
+  email:text("email").notNull(),
+  testId: varchar("testid").notNull(),
+  score:integer("score").notNull(),
+  createdAt: varchar("createdAt"),
+ 
+})
+
+export const ranking = pgTable("rankings",{
+  id:serial("id").primaryKey(),
+  userName:text("userName").notNull(),
+  email:text("email").notNull(),
+  clerkUserId: varchar("clerkUserId").notNull(),
+  totalScore: integer("total_score").default(0),
+  createdAt: varchar("createdAt"),
+})

@@ -16,7 +16,6 @@ export default function JobForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
@@ -37,7 +36,7 @@ export default function JobForm() {
 
       if (res.ok) {
         toast.success("Job Posted Successfully!");
-        router.replace(router.asPath); // ✅ Refresh page correctly in App Router
+        router.replace('/getalljobs'); 
       } else {
         toast.error(" Failed to create post.");
       }

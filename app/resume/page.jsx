@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
-
+import Navbar from "../dashboard/_components/navbar";
 export default function ResumeUpload() {
   const [resume, setResume] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
@@ -22,42 +22,20 @@ export default function ResumeUpload() {
     e.preventDefault();
     setErrorMessage(""); // Reset error on new submission
 
-    if (!resume || !jobDescription) {
-      alert("Please upload a resume and enter a job description.");
-      return;
-    }
+ 
 
-    const formData = new FormData();
-    formData.append("resume", resume);
-    formData.append("jobDescription", jobDescription);
+
 
     setLoading(true);
-    try {
-      const response = await fetch("/api/resumeats", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("API returned an error.");
-      }
-
-      const data = await response.json(); // ✅ Correct JSON parsing
-
-      if (data.atsScore !== undefined) {
-        setAtsScore(data.atsScore);
-      } else {
-        throw new Error("Invalid JSON format from API.");
-      }
-    } catch (error) {
-      console.error("❌ API Error:", error.message || error);
-      setErrorMessage("Failed to analyze resume. Please try again.");
-    }
-    setLoading(false);
-  };
-
+    fetch("/api/atsResume", { method: "POST" })
+    .then((res) => res.json())
+    .then((data) => console.log(data))
+    .catch((err) => console.error(err));
+  }  
   return (
-    <div className="flex flex-col items-center p-6">
+    <>
+           <Navbar />
+    <div className="flex flex-col mt-4 items-center p-6">
       <Card className="w-full max-w-lg shadow-lg">
         <CardHeader>
           <h2 className="text-xl font-bold text-center">Upload Resume for ATS Scoring</h2>
@@ -106,5 +84,6 @@ export default function ResumeUpload() {
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }

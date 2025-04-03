@@ -13,18 +13,3 @@ export async function GET() {
   }
 }
 
-
-     // Get user details
-      // const user = await currentUser();
-      // if (!user) {
-      //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-      // }
-  
-      // // Extract user email
-      // const userEmail = user.emailAddresses[0].emailAddress;
-  
-      // Fetch jobs created by this user using Drizzle's eq function
-      // const userPosts = await db
-      //   .select()
-      //   .from(AlumniPost)
-      //   .where(eq(AlumniPost.alumniEmail, userEmail));

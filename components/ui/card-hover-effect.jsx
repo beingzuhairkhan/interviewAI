@@ -7,6 +7,7 @@ import Image from "next/image";
 
 export const HoverEffect = ({ items, className }) => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
+ // console.log("IMage", items)
 
   return (
     <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 py-10", className)}>
@@ -31,47 +32,47 @@ export const HoverEffect = ({ items, className }) => {
           </AnimatePresence>
           <Card>
             <CardTitle>{item.title || "Untitled Job"}</CardTitle>
-          
-        
+
+
             <CardDescription className="text-justify" >{item.content || "No description available."}</CardDescription>
             <div className="flex justify-between" >
-         <div>
-         <div className="mt-4 text-gray-400 text-sm">
-              <p><strong>Company:</strong> {item.company || "N/A"}</p>
-              <p><strong>Location:</strong> {item.location || "N/A"}</p>
-            </div>
-            <div className="mt-2 text-gray-400 text-xs">
-              <p><strong>Posted on:</strong> {item.createdAt ? new Date(item.createdAt).toDateString() : "Unknown Date"}</p>
-              <p><strong>Posted by:</strong> {item.alumniName || "Anonymous"}</p>
-            </div>
-          </div>
-            
-            <div>
-            <Image
-      src="https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ydXNBWlEwYWU1YkFtMG9yRWt3THZTbzBlVTAifQ"
-      alt="Job Posting"
-      width={100} // Adjust size as needed
-      height={100}
-      className=" object-cover rounded-xl mb-4"
-      priority
-    />
-            </div>
-            </div>
-            <div>
-            {item.jobLink && (
-              <div className="mt-4">
-                <a
-                  href={item.jobLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 bg-white text-black font-medium rounded-lg hover:bg-gray-300 transition"
-                >
-                  Apply Now
-                </a>
+              <div>
+                <div className="mt-4 text-gray-400 text-sm">
+                  <p><strong>Company:</strong> {item.company || "N/A"}</p>
+                  <p><strong>Location:</strong> {item.location || "N/A"}</p>
+                </div>
+                <div className="mt-2 text-gray-400 text-xs">
+                  <p><strong>Posted on:</strong> {item.createdAt ? new Date(item.createdAt).toDateString() : "Unknown Date"}</p>
+                  <p><strong>Posted by:</strong> {item.alumniName || "Anonymous"}</p>
+                </div>
               </div>
-            )}
+
+              <div className="mt-2" >
+                <Image
+                  src={item.image}
+                  alt={item.image}
+                  width={100}
+                  height={100}
+                  className=" object-cover rounded-xl mb-4"
+                  priority
+                />
+              </div>
             </div>
-         
+            <div>
+              {item.jobLink && (
+                <div className="mt-4">
+                  <Link
+                    href={item.jobLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-white text-black font-medium rounded-lg hover:bg-gray-300 transition"
+                  >
+                    Apply Now
+                  </Link>
+                </div>
+              )}
+            </div>
+
           </Card>
         </Link>
       ))}

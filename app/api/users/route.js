@@ -6,18 +6,17 @@ export async function POST(req) {
   try {
     console.log("Route calling start");
 
-    // ✅ Get the auth token from request headers
-    const { userId } = getAuth(req); // ✅ Correct way to get user ID
+
+    const { userId } = getAuth(req); 
     console.log("Verified:", userId);
 
     if (!userId) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await req.json(); // Parse request body
+    const user = await req.json(); 
     console.log("User data from body:", user);
 
-    // ✅ Save user data in database
     await db.insert(Users).values({
       clerkUserId: userId,
       name: user.name || "Unknown",

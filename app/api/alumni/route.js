@@ -1,30 +1,32 @@
-import { db } from "@/utils/db"; // PostgreSQL Drizzle connection
+import { db } from "@/utils/db"; 
 import { currentUser } from "@clerk/nextjs/server";
 import { AlumniPost } from "@/utils/schema";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    // 1️⃣ Get the logged-in user from Clerk
+ 
     const user = await currentUser();
+   // console.log("User server" , user)
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2️⃣ Extract user details from Clerk
     const alumniName = `${user.firstName} ${user.lastName}`;
     const alumniEmail = user.emailAddresses[0].emailAddress;
-    const alumniId = user.id; // Clerk User ID
-    const role = user.publicMetadata?.role || "alumni"; // Default role
+    const alumniId = user.id; 
+    const imageURL = user.imageUrl
+    const role = user.publicMetadata?.role || "alumni"; 
 
-    // 3️⃣ Parse the request body (Fixing req.body issue)
+   
     const body = await req.json();
     const { title, content, company, location, jobLink } = body;
 
-    // 4️⃣ Insert data into PostgreSQL using Drizzle
+    
     const newPost = await db.insert(AlumniPost).values({
       alumniName,
       alumniEmail,
+      imageURL,
       alumniId,
       role,
       title,
@@ -32,7 +34,7 @@ export async function POST(req) {
       company,
       location,
       jobLink,
-      createdAt: new Date().toISOString(), // ✅ Use ISO timestamp format
+      createdAt: new Date().toISOString(), 
     });
 
     return NextResponse.json(
