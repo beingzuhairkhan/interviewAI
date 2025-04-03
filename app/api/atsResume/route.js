@@ -1,37 +1,86 @@
-
 import { NextResponse } from "next/server";
+import Groq from "groq-sdk";
 import pdfParse from "pdf-parse";
-import fs from "fs";
-import path from "path";
 
-export async function POST() {
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+export async function POST(request) {
   try {
-    console.log(" API Request received at /api/atsResume");
+    console.log(" Request received at /api/resumeats");
 
- 
-    const jobDescription = "Looking for a MERN stack developer with React and Node.js.";
-    console.log(" Job Description:", jobDescription);
+    
+    const formData = await request.formData();
+    const resumeFile = formData.get("resume");
+    const jobDescription = formData.get("jobDescription");
 
-    // ✅ Read Resume File
-    const resumePath = path.join(process.cwd(), "public", "zuhair_.pdf"); 
+    console.log(" Received form data:", { resumeFile, jobDescription });
 
-    if (!fs.existsSync(resumePath)) {
-      console.error(" Resume file not found at:", resumePath);
-      return NextResponse.json({ error: "Resume file not found." }, { status: 404 });
+    //  Validate input
+    if (!resumeFile || !jobDescription) {
+      return NextResponse.json(
+        { error: "Resume and Job Description are required" },
+        { status: 400 }
+      );
     }
 
-    const resumeBuffer = fs.readFileSync(resumePath);
-    console.log(" Resume Buffer Size:", resumeBuffer.length);
+    //  Convert file to buffer
+    const buffer = Buffer.from(await resumeFile.arrayBuffer());
 
-    // ✅ Parse PDF to extract text
-    const resumeData = await pdfParse(resumeBuffer);
-    console.log(" Extracted Resume Text:", resumeData.text.substring(0, 500));
+    //  Parse PDF text
+    let resumeText = "";
+    try {
+      const parsedData = await pdfParse(buffer);
+      resumeText = parsedData.text;
+      console.log(" Extracted Resume Text:", resumeText.substring(0, 500)); 
+    } catch (error) {
+      console.error("PDF Parsing Error:", error.message);
+      return NextResponse.json({ error: "Failed to parse PDF file." }, { status: 500 });
+    }
 
-    return NextResponse.json({
-    resumeData
+    //  AI Prompt for Resume Scoring
+    const prompt = `
+    Analyze the following resume and compare it with the given job description. Assign an ATS score (0-100) based on keyword relevance, formatting, readability, and completeness. Also, provide missing skills and improvement suggestions.
+
+    Job Description:
+    ${jobDescription}
+
+    Resume:
+    ${resumeText}
+
+    Return the response in **valid JSON format** like this:
+    {
+      "atsScore": 85,
+      "missingSkills": ["React.js", "GraphQL"],
+      "formattingSuggestions": ["Use bullet points for clarity"],
+      "readabilityImprovements": ["Reduce long paragraphs"]
+    }`;
+
+    console.log(" Sending Prompt to Groq API:", prompt);
+
+  
+    const aiResponse = await groq.chat.completions.create({
+      messages: [{ role: "user", content: prompt }],
+      model: "llama-3.3-70b-versatile",
     });
+
+    console.log("🔹 Raw Groq API Response:", aiResponse);
+
+  
+    let responseText = aiResponse.choices?.[0]?.message?.content?.trim();
+    if (!responseText) {
+      throw new Error("Groq AI did not return valid JSON.");
+    }
+
+    responseText = responseText.replace(/```json|```/g, "").trim();
+
+    console.log(" Processed AI Response:", responseText);
+
+  
+    const parsedResponse = JSON.parse(responseText);
+
+    return NextResponse.json("API IS WORKING", { status: 200 });
   } catch (error) {
-    console.error(" Error processing resume:", error);
-    return NextResponse.json({ error: "Internal Server Error." }, { status: 500 });
+    console.error(" ATS API Error:", error.message || error);
+    return NextResponse.json({ error: "Failed to analyze resume" }, { status: 500 });
   }
 }
